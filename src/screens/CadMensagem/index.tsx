@@ -6,16 +6,19 @@ import { useState } from "react";
 import React from "react";
 import { MaterialIcons, Entypo } from "@expo/vector-icons";
 import { ButtonInterface } from "../../components/ButtonInterface";
+import { useAuth } from "../../hook/auth";
 import { AxiosError } from "axios";
 import { IMessage } from "../../services/data/Message";
 import { apiMessage } from "../../services/data";
 
 export function CadMensagem({ navigation }: MenuStackTypes) {
     const [data, setData] = useState<IMessage>();
+    const {setLoading} = useAuth()
 
     async function handleCadMessage() {
         if (data?.title && data.message) {
             console.log(data)
+            setLoading(true)
             try {
                 await apiMessage.store(data)
                 Alert.alert("Mensagem Cadastrada!")
@@ -25,6 +28,7 @@ export function CadMensagem({ navigation }: MenuStackTypes) {
                 const msg = err.response?.data as string
                 Alert.alert(msg)
             }
+            setLoading(false)
         } else {
             Alert.alert("Preencha todos os campos!!!")
         }

@@ -18,23 +18,14 @@ export const Painel = StyleSheet.create({
         color: "white",
         fontSize: 14
     },
-    campoTitulo: {
+    campo: {
         alignItems: "center",
         backgroundColor: 'beige',
-        borderWidth: 2,
+        borderWidth: 5,
+        borderTopLeftRadius: 20,
+        borderBottomRightRadius: 20,
         width: 300,
-        height: 40,
-        flexDirection: "row",
-        padding: 20,
-        marginBottom: 20,
-        borderColor: "black"
-    },
-    campoMensagem: {
-        alignItems: "center",
-        backgroundColor: 'beige',
-        borderWidth: 2,
-        width: 300,
-        height: 200,
+        height: 80,
         flexDirection: "row",
         padding: 20,
         marginBottom: 20,

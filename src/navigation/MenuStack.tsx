@@ -1,32 +1,32 @@
 import { StackNavigationProp, createStackNavigator } from "@react-navigation/stack";
-import {ScreenCadastroMensagem, ScreenMensagem} from "../screens/index"
+import {ScreenLogin, ScreenCadastro} from "../screens/index"
 import { MenuDrawer } from "./MenuDrawer";
 
 type MenuStackParam = {
-    Mensagem: undefined
-    CadMensagem: undefined
+    Login: undefined
+    Cadastro: undefined
 }
 
-type MenuScreenNavigation = StackNavigationProp<MenuStackParam, "Mensagem">
+type MenuScreenNavigation = StackNavigationProp<MenuStackParam, "Login">
 export type MenuStackTypes = {
     navigation: MenuScreenNavigation
 }
 
-export function MensagemStack() {
+export function MenuStack() {
     const Stack = createStackNavigator<MenuStackParam>();
     return (
         <Stack.Navigator screenOptions={{
             animationEnabled: true,
-            gestureEnabled: false,
+            gestureEnabled: true,
             headerShown: false
         }}>
            <Stack.Screen options={{
-            headerTitle: "Mensagens"
-           }} name="Mensagem" component={ScreenMensagem}/>
+            headerTitle: "Login"
+           }} name="Login" component={ScreenLogin}/>
 
            <Stack.Screen options={{
-            headerTitle: "Cadastrar Mensagem" 
-           }} name="CadMensagem" component={ScreenCadastroMensagem}/>
+            headerTitle: "Cadastro" 
+           }} name="Cadastro" component={ScreenCadastro}/>
         </Stack.Navigator>
     )
 }
