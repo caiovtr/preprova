@@ -1,5 +1,5 @@
 import { createBottomTabNavigator, BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { ScreenPerfil, ScreenMensagem, ScreenCamera } from "../screens/index";
+import { ScreenPerfil, ScreenMensagem, ScreenCamera, ScreenImages } from "../screens/index";
 import { Entypo, Feather } from "@expo/vector-icons";
 import { MensagemStack } from "./MensagemStack";
 import React from 'react';
@@ -8,6 +8,7 @@ type MenuTabParam = {
     Perfil: undefined
     Mensagens: undefined
     Camera: undefined
+    Album: undefined
 }
 
 type MenuScreenNavigation = BottomTabNavigationProp<MenuTabParam, "Perfil">
@@ -42,6 +43,14 @@ export function MenuBottomTabs() {
                     )
                 }}
             />
-        </Tab.Navigator>
+
+            <Tab.Screen name="Album" component={ScreenImages}
+                options={{
+                    tabBarIcon: () => (
+                        <Entypo name="image" size={27} color="black" />
+                    )
+                }}
+            />
+            </Tab.Navigator>
     )
 }
