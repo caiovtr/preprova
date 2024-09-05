@@ -53,6 +53,7 @@ export function Login({ navigation }: MenuStackTypes) {
                         placeholderTextColor={"black"}
                         placeholder="Email"
                         keyboardType="email-address"
+                        autoCapitalize="none"
                         onChangeText={(i) => handleChange({ email: i })}
                     />
                 </View>

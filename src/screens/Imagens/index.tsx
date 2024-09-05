@@ -12,7 +12,7 @@ export function Images() {
   const [image, setImage] = useState<string | null>(null);
 
   async function getAlbums() {
-    if (permissionResponse && permissionResponse.status !== 'granted') {
+    if (permissionResponse && permissionResponse.status !== 'granted' && permissionResponse.accessPrivileges !== 'all') {
       await requestPermission();
     }
 

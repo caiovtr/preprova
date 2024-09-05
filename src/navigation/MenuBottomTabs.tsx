@@ -1,6 +1,6 @@
 import { createBottomTabNavigator, BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { ScreenPerfil, ScreenMensagem, ScreenCamera, ScreenImages } from "../screens/index";
-import { Entypo, Feather } from "@expo/vector-icons";
+import { ScreenPerfil, ScreenMensagem, ScreenCamera, ScreenImages, ScreenQrCode } from "../screens/index";
+import { Entypo, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { MensagemStack } from "./MensagemStack";
 import React from 'react';
 
@@ -9,6 +9,7 @@ type MenuTabParam = {
     Mensagens: undefined
     Camera: undefined
     Album: undefined
+    QrCode: undefined
 }
 
 type MenuScreenNavigation = BottomTabNavigationProp<MenuTabParam, "Perfil">
@@ -48,6 +49,14 @@ export function MenuBottomTabs() {
                 options={{
                     tabBarIcon: () => (
                         <Entypo name="image" size={27} color="black" />
+                    )
+                }}
+            />
+
+            <Tab.Screen name="QrCode" component={ScreenQrCode}
+                options={{
+                    tabBarIcon: () => (
+                        <MaterialCommunityIcons name="qrcode-scan" size={27} color="black" />
                     )
                 }}
             />
