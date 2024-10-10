@@ -1,5 +1,5 @@
 import { createBottomTabNavigator, BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { ScreenPerfil, ScreenMensagem, ScreenCamera, ScreenImages, ScreenQrCode } from "../screens/index";
+import { ScreenPerfil, ScreenMensagem, ScreenCamera, ScreenImages, ScreenQrCode, ScreenMapa } from "../screens/index";
 import { Entypo, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { MensagemStack } from "./MensagemStack";
 import React from 'react';
@@ -10,6 +10,7 @@ type MenuTabParam = {
     Camera: undefined
     Album: undefined
     QrCode: undefined
+    Mapa: undefined
 }
 
 type MenuScreenNavigation = BottomTabNavigationProp<MenuTabParam, "Perfil">
@@ -57,6 +58,14 @@ export function MenuBottomTabs() {
                 options={{
                     tabBarIcon: () => (
                         <MaterialCommunityIcons name="qrcode-scan" size={27} color="black" />
+                    )
+                }}
+            />
+
+            <Tab.Screen name="Mapa" component={ScreenMapa}
+                options={{
+                    tabBarIcon: () => (
+                        <MaterialCommunityIcons name="map" size={27} color="black" />
                     )
                 }}
             />
