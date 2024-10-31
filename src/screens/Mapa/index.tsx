@@ -1,37 +1,33 @@
-import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView } from "react-native"
-import { Painel } from './style';
-import { useState, useEffect, useRef } from "react";
-import React from "react";
-import { MaterialIcons, Entypo } from "@expo/vector-icons";
-
-//Bibliotecas do Mapa sem API
-import * as Location from "expo-location"
-import MapView, { Region, Marker } from "react-native-maps"
-
-//Bibliotecas do Mapa com API
-import { 
+import { useEffect, useRef, useState } from "react";
+import MapView, { Marker, Polyline, Region } from 'react-native-maps'
+import * as Location from 'expo-location'
+import { View, Text, Image} from "react-native";
+import { Painel } from "./style";
+import { colors } from '../../styles/GlobalStyles';
+import {
     GooglePlaceData, GooglePlaceDetail,
     GooglePlacesAutocomplete
-} from "react-native-google-places-autocomplete";
+} from "react-native-google-places-autocomplete"
+
 import MapViewDirections from "react-native-maps-directions";
 
+
 export function Mapa() {
-    const [location, setLocation] = useState<null | Location.LocationObject>(null)
+    const [location, setLocation] = useState<null | Location.LocationObject>(null);
     const [region, setRegion] = useState<Region>();
     const [marker, setMarker] = useState<Region[]>();
     const [errorMsg, setErrorMsg] = useState<null | string>(null);
-    const [destination, setDestination] = useState<Region | null>(null);
-    const mapRef = useRef<MapView>(null);
-
+    const [destination, setDestination] = useState<Region | null>(null)
+    const mapRef = useRef<MapView>(null)
     useEffect(() => {
         const handleLocation = async () => {
-            let {status} = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                setErrorMsg("Permissão para acessar a localização negada");
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== "granted") {
+                setErrorMsg("Permission to acces location was denied");
                 return;
             }
 
-            let location = await  Location.getCurrentPositionAsync();
+            let location = await Location.getCurrentPositionAsync();
             if (location) {
                 setLocation(location);
                 setRegion({
@@ -39,40 +35,41 @@ export function Mapa() {
                     longitude: location.coords.longitude,
                     latitudeDelta: 0.004,
                     longitudeDelta: 0.004,
-                });
+                })
                 setMarker([
                     {
                         latitude: location.coords.latitude,
                         longitude: location.coords.longitude,
                         latitudeDelta: 0.004,
                         longitudeDelta: 0.004,
-                    }
+                    },
                 ]);
             }
-        }
+        };
         handleLocation();
-    }, [])
-
-    async function handleDestination(data:GooglePlaceData, details:GooglePlaceDetail | null) {
-        if (details) {
+    }, []);
+    async function handleDestibation(data: GooglePlaceData, details: GooglePlaceDetail |null) {
+        if (details){
             setDestination({
-                    latitude: details?.geometry.location.lat,
-                    longitude: details?.geometry.location.lng,
-                    latitudeDelta: 0.004,
-                    longitudeDelta: 0.004,
+                latitude: details?.geometry.location.lat,
+                longitude: details?.geometry.location.lng,
+                longitudeDelta:0.004,
+                latitudeDelta: 0.004,
+
             })
-            if (marker) {
-                setMarker([...marker, {
+            if(marker){
+                setMarker([...marker,{
                     latitude: details?.geometry.location.lat,
                     longitude: details?.geometry.location.lng,
+                    longitudeDelta:0.004,
                     latitudeDelta: 0.004,
-                    longitudeDelta: 0.004,
                 }])
+
             }
         }
     }
 
-    let text = "Carregando...";
+    let text = "Waiting..";
     if (errorMsg) {
         text = errorMsg;
     } else if (location) {
@@ -80,56 +77,63 @@ export function Mapa() {
     }
 
     return (
-        <View>
-            {!region && <Text>{text}</Text> }
+        <View style={Painel.container}>
+            {!region && <Text style={Painel.texto}>{text}</Text>}
             {region && (
                 <>
-                    <GooglePlacesAutocomplete
-                        styles={{textInput: Painel.input, container: Painel.barra}}
-                        placeholder="Para onde?"
-                        fetchDetails={true}
-                        GooglePlacesDetailsQuery={{fields: "geometry"}}
-                        query={{
-                            key: "AIzaSyDdDU8GLhWRZjrmp55NTqrR1GUL9BOA9pA",
-                            language: "pt-BR"
-                        }}
-                        onFail={setErrorMsg}
-                        onPress={handleDestination}
+                <GooglePlacesAutocomplete
+                styles={{container: Painel.barra, textInput: Painel.input}}
+                placeholder="Para onde deseja ir?"
+                fetchDetails={true}
+                GooglePlacesDetailsQuery={{ fields: "geometry"}}
+                enablePoweredByContainer ={false}
+                query={{
+                    key: 'AIzaSyDdDU8GLhWRZjrmp55NTqrR1GUL9BOA9pA',
+                    language: 'pt-BR'
+                }}
+                onFail={setErrorMsg}
+                onPress={handleDestibation}
                     />
-                    <MapView style={Painel.map} region={region}
-                        showsUserLocation={true} ref={mapRef}
-                    />
-                    {marker && 
-                        marker.map((item) => (
-                            <Marker key={item.longitude} coordinate={item}/>
-                        ))
-                    }
-
-                    {destination && (
+                <MapView style={Painel.map} region={region} 
+                showsUserLocation={true} ref={mapRef}
+                >
+                    {marker && marker.map((item) => (
+                        <Marker key={item.latitude} coordinate={item} >
+                            
+                        </Marker>
+                    ))}
+                   {/* <Polyline
+                        coordinates={[
+                            { latitude: -21.570350, longitude: -45.415694 },
+                            { latitude: -21.560640, longitude: -45.444747 },
+                        ]}
+                        strokeColor={colors.azul}
+                        strokeWidth={7}
+                    />*/}
+                    { destination && (
                         <MapViewDirections
-                            origin={region}
-                            destination={destination}
-                            apikey = "AIzaSyDdDU8GLhWRZjrmp55NTqrR1GUL9BOA9pA"
-                            strokeWidth={7}
-                            strokeColor="#000000"
-                            lineDashPattern={[0]}
-                            onReady={(result) =>{
-                                mapRef.current?.fitToCoordinates(result.coordinates, {
-                                    edgePadding: {
-                                        top: 24,
-                                        bottom: 24,
-                                        left: 24,
-                                        right: 24,
-                                    }
-                                })
-                            }}
+                        origin = {region}
+                        destination={ destination}
+                        apikey="AIzaSyDdDU8GLhWRZjrmp55NTqrR1GUL9BOA9pA"
+                        strokeColor="hotpink"
+                        strokeWidth={4}
+                        lineDashPattern={[0]}
+                        onReady={(result)=>{
+                            mapRef.current?.fitToCoordinates(result.coordinates, {
+                                edgePadding:{
+                                    top: 24,
+                                    bottom: 24,
+                                    left: 24,
+                                    right: 24,
 
+                                }
+                            })
+                        }}
                         />
                     )}
+                </MapView>
                 </>
             )}
-            
-            
         </View>
     )
 }
