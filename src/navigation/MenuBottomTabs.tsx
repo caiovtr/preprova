@@ -1,71 +1,52 @@
 import { createBottomTabNavigator, BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { ScreenPerfil, ScreenMensagem, ScreenCamera, ScreenImages, ScreenQrCode, ScreenMapa } from "../screens/index";
-import { Entypo, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-import { MensagemStack } from "./MensagemStack";
+import { ScreenMapa, ScreenCoordenadas} from "../screens/index";
+import { Entypo, Feather } from "@expo/vector-icons";
 import React from 'react';
+import { colors } from "../styles/GlobalStyles";
 
-type MenuTabParam = {
-    Perfil: undefined
-    Mensagens: undefined
-    Camera: undefined
-    Album: undefined
-    QrCode: undefined
-    Mapa: undefined
+export interface ICoords {
+    origemLatitude?: string
+    origemLongitude?: string
+    destinoLatitude?: string
+    destinoLongitude?: string
 }
 
-type MenuScreenNavigation = BottomTabNavigationProp<MenuTabParam, "Perfil">
+type TabParam = {
+    Coordenadas: undefined
+    Mapa: undefined | ICoords
+}
+
+type MenuScreenNavigation = BottomTabNavigationProp<TabParam, "Coordenadas">
+
 export type MenuTabTypes = {
     navigation: MenuScreenNavigation;
 }
 
 export function MenuBottomTabs() {
-    const Tab = createBottomTabNavigator<MenuTabParam>();
+    const Tab = createBottomTabNavigator<TabParam>();
     return (
-        <Tab.Navigator>
-            <Tab.Screen name="Perfil" component={ScreenPerfil}
+        <Tab.Navigator screenOptions={{
+            headerStyle: { backgroundColor: colors.primary },
+            headerTintColor: 'white',
+            tabBarStyle: { backgroundColor: colors.primary },
+            tabBarActiveTintColor: 'white',
+            tabBarInactiveTintColor: 'white',
+            tabBarActiveBackgroundColor: colors.secondary
+        }}>
+            <Tab.Screen name="Coordenadas" component={ScreenCoordenadas}
                 options={{
+                    title:"Entrada de Dados",
                     tabBarIcon: () => (
-                        <Entypo name="user" size={27} color="black" />
-                    )
-                }}
-            />
-
-            <Tab.Screen name="Mensagens" component={MensagemStack}
-                options={{
-                    tabBarIcon: () => (
-                        <Entypo name="mail" size={27} color="black" />
-                    )
-                }}
-            />
-
-            <Tab.Screen name="Camera" component={ScreenCamera}
-                options={{
-                    tabBarIcon: () => (
-                        <Entypo name="camera" size={27} color="black" />
-                    )
-                }}
-            />
-
-            <Tab.Screen name="Album" component={ScreenImages}
-                options={{
-                    tabBarIcon: () => (
-                        <Entypo name="image" size={27} color="black" />
-                    )
-                }}
-            />
-
-            <Tab.Screen name="QrCode" component={ScreenQrCode}
-                options={{
-                    tabBarIcon: () => (
-                        <MaterialCommunityIcons name="qrcode-scan" size={27} color="black" />
+                        <Feather name="search" size={27} color="white" />
                     )
                 }}
             />
 
             <Tab.Screen name="Mapa" component={ScreenMapa}
                 options={{
+                    title:"Posiciona Mapa",
                     tabBarIcon: () => (
-                        <MaterialCommunityIcons name="map" size={27} color="black" />
+                        <Entypo name="map" size={27} color="white" />
                     )
                 }}
             />

@@ -1,139 +1,75 @@
 import { useEffect, useRef, useState } from "react";
-import MapView, { Marker, Polyline, Region } from 'react-native-maps'
+import MapView, { LatLng, Marker, Polyline, Region } from 'react-native-maps'
 import * as Location from 'expo-location'
-import { View, Text, Image} from "react-native";
-import { Painel } from "./style";
+import { View, Text, Image, Alert } from "react-native";
+import { styles } from "./style";
 import { colors } from '../../styles/GlobalStyles';
-import {
-    GooglePlaceData, GooglePlaceDetail,
-    GooglePlacesAutocomplete
-} from "react-native-google-places-autocomplete"
+import { useRoute } from "@react-navigation/native"
+import { ICoords, MenuTabTypes } from "../../navigation/MenuBottomTabs";
+import { MaterialIcons } from "@expo/vector-icons";
 
-import MapViewDirections from "react-native-maps-directions";
-
-
-export function Mapa() {
-    const [location, setLocation] = useState<null | Location.LocationObject>(null);
+export function Mapa({ navigation }: MenuTabTypes) {
     const [region, setRegion] = useState<Region>();
-    const [marker, setMarker] = useState<Region[]>();
     const [errorMsg, setErrorMsg] = useState<null | string>(null);
-    const [destination, setDestination] = useState<Region | null>(null)
     const mapRef = useRef<MapView>(null)
+
+    // Variáveis de Estado que são necessárias para pegar os dados
+    const route = useRoute()
+    const data = route.params as ICoords
+
+    // Variáveis de estado para setar origem e destino
+    const [origem, setOrigem]  = useState<Region>();
+    const [destino, setDestino]  = useState<Region>();
     useEffect(() => {
+
         const handleLocation = async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== "granted") {
                 setErrorMsg("Permission to acces location was denied");
                 return;
             }
-
-            let location = await Location.getCurrentPositionAsync();
-            if (location) {
-                setLocation(location);
-                setRegion({
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                    latitudeDelta: 0.004,
-                    longitudeDelta: 0.004,
+            if (data && data.origemLatitude && data.origemLongitude && data.destinoLatitude && data.destinoLongitude) {
+                setOrigem({
+                    latitude: Number(data.origemLatitude), longitude: Number(data.origemLongitude), latitudeDelta:0.04, longitudeDelta: 0.04
                 })
-                setMarker([
-                    {
-                        latitude: location.coords.latitude,
-                        longitude: location.coords.longitude,
-                        latitudeDelta: 0.004,
-                        longitudeDelta: 0.004,
-                    },
-                ]);
+                setDestino({
+                    latitude: Number(data.destinoLatitude), longitude: Number(data.destinoLongitude), latitudeDelta:0.04, longitudeDelta: 0.04,
+                })
+            } else {
+                navigation.navigate('Coordenadas')
+                Alert.alert('Faltando dados!!!')
             }
+
         };
+
         handleLocation();
-    }, []);
-    async function handleDestibation(data: GooglePlaceData, details: GooglePlaceDetail |null) {
-        if (details){
-            setDestination({
-                latitude: details?.geometry.location.lat,
-                longitude: details?.geometry.location.lng,
-                longitudeDelta:0.004,
-                latitudeDelta: 0.004,
+    }, [data]);
 
-            })
-            if(marker){
-                setMarker([...marker,{
-                    latitude: details?.geometry.location.lat,
-                    longitude: details?.geometry.location.lng,
-                    longitudeDelta:0.004,
-                    latitudeDelta: 0.004,
-                }])
-
-            }
-        }
-    }
 
     let text = "Waiting..";
     if (errorMsg) {
         text = errorMsg;
-    } else if (location) {
-        text = JSON.stringify(location);
     }
 
     return (
-        <View style={Painel.container}>
-            {!region && <Text style={Painel.texto}>{text}</Text>}
-            {region && (
-                <>
-                <GooglePlacesAutocomplete
-                styles={{container: Painel.barra, textInput: Painel.input}}
-                placeholder="Para onde deseja ir?"
-                fetchDetails={true}
-                GooglePlacesDetailsQuery={{ fields: "geometry"}}
-                enablePoweredByContainer ={false}
-                query={{
-                    key: 'AIzaSyDdDU8GLhWRZjrmp55NTqrR1GUL9BOA9pA',
-                    language: 'pt-BR'
-                }}
-                onFail={setErrorMsg}
-                onPress={handleDestibation}
-                    />
-                <MapView style={Painel.map} region={region} 
-                showsUserLocation={true} ref={mapRef}
-                >
-                    {marker && marker.map((item) => (
-                        <Marker key={item.latitude} coordinate={item} >
-                            
-                        </Marker>
-                    ))}
-                   {/* <Polyline
-                        coordinates={[
-                            { latitude: -21.570350, longitude: -45.415694 },
-                            { latitude: -21.560640, longitude: -45.444747 },
-                        ]}
-                        strokeColor={colors.azul}
-                        strokeWidth={7}
-                    />*/}
-                    { destination && (
-                        <MapViewDirections
-                        origin = {region}
-                        destination={ destination}
-                        apikey="AIzaSyDdDU8GLhWRZjrmp55NTqrR1GUL9BOA9pA"
-                        strokeColor="hotpink"
-                        strokeWidth={4}
-                        lineDashPattern={[0]}
-                        onReady={(result)=>{
-                            mapRef.current?.fitToCoordinates(result.coordinates, {
-                                edgePadding:{
-                                    top: 24,
-                                    bottom: 24,
-                                    left: 24,
-                                    right: 24,
+        <View style={styles.container}>
 
-                                }
-                            })
-                        }}
-                        />
-                    )}
-                </MapView>
-                </>
-            )}
+            <MapView style={styles.map} region={region}
+                showsUserLocation={true} ref={mapRef}
+            >
+
+                <Marker coordinate={origem as LatLng}>
+                    <MaterialIcons name="room" size={34} color={colors.primary} />               
+                </Marker>
+                <Marker coordinate={destino as LatLng}>
+                    <MaterialIcons name="room" size={34} color={colors.primary} />  
+                </Marker>
+
+                <Polyline strokeColor={colors.primary} strokeWidth={6} coordinates={[origem as LatLng, destino as LatLng]}></Polyline>
+
+            </MapView>
+
+
         </View>
     )
 }

@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const Painel = StyleSheet.create({
+export const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: "center",
@@ -14,13 +14,6 @@ export const Painel = StyleSheet.create({
     texto: {
         color: "white",
         fontSize: 18
-    },
-    barra: {
-        position: 'absolute',
-        zIndex: 1,
-        width: '80%',
-        top: 10,
-        marginLeft: 30
     },
     input: {
         height: 56,
